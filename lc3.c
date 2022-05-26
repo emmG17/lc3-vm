@@ -33,12 +33,22 @@ enum
 	OP_TRAP
 };
 
-enum {
+enum
+{
 	FL_POS = 1 << 0,
 	FL_ZRO = 1 << 1,
 	FL_NEG = 1 << 2,
 };
 
+enum
+{
+	TRAP_GETC = 0x20;
+	TRAP_OUT = 0x21;
+	TRAP_PUTS = 0x22;
+	TRAP_IN = 0x23;
+	TRAP_PUTSP = 0x24;;
+	TRAP_HALT = 0x25
+}
 #define MEMORY_MAX (1 << 16)
 uint16_t memory[MEMORY_MAX];
 
@@ -223,6 +233,23 @@ int main(int argc, const char* argv[])
 				break;
 
 			case OP_TRAP:
+				reg[R_R7] = reg[R_PC];
+
+				switch (instruction & 0xFF)
+				{
+					case TRAP_GETC:
+						break;
+					case TRAP_OUT:
+						break;
+					case TRAP_PUTS:
+						break;
+					case TRAP_IN:
+						break;
+					case TRAP_PUTSP:
+						break;
+					case TRAP_HALT:
+						break;
+				}
 				break;
 			case OP_RES:
 			case OP_RTI:
