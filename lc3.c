@@ -137,7 +137,13 @@ int main(int argc, const char* argv[])
 				break;
 
 			case OP_NOT:
+				uint16_t r0 = (instruction >> 9) & 0x7;
+				uint16_t r1 = (instruction >> 6) & 0x7;
+
+				reg[r0] = ~reg[r1];
+				update_flags(r0);
 				break;
+				
 			case OP_BR:
 				break;
 			case OP_JMP:
