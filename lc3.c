@@ -210,11 +210,18 @@ int main(int argc, const char* argv[])
 				break;
 
 			case OP_STI:
-				uint16_t r0 = (instruction >> 0) & 0x7;
+				uint16_t r0 = (instruction >> 9) & 0x7;
 				uint16_t pc_offset = sign_extend(instruction & 0x1FF, 9);
 				mem_write(mem_read(reg[R_PC] + pc_offset), reg[r0]);
 				break;
-			
+
+			case OP_STR:
+				uint16_t r0 = (instruction >> 9) & 0x7;
+				uint16_t r1 = (instruction >> 6) & 0x7;
+				uint16_t offset = sign_extend(instruction & 0x3F, 6)
+				mem_write (reg[r1] + offset, reg[r0])
+				break;
+
 			case OP_TRAP:
 				break;
 			case OP_RES:
