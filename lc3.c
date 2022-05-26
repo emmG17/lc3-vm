@@ -119,7 +119,23 @@ int main(int argc, const char* argv[])
 				break;
 
 			case OP_AND:
+				uint16_t r0 = (instruction >> 9) & 0x7;
+				uint16_t r1 = (instruction >> 6) & 0x7;
+				uint16_t imm_flag = (instruction >> 5) & 0x1;
+
+				if (imm_flag)
+				{
+					uint16_t imm5 = sign_extend(instruction & 0x1F, 5);
+					reg[r0] = reg[r1] & imm5;
+				}
+				else
+				{
+					uint16_t r2 = instruction & 0x7;
+					reg[r0] = reg[r1] & reg[r2];
+				}
+				update_flags(r0);				
 				break;
+
 			case OP_NOT:
 				break;
 			case OP_BR:
