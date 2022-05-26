@@ -190,12 +190,26 @@ int main(int argc, const char* argv[])
 					reg[R_PC] = reg[r1];					
 				}
 				break;
+
 			case OP_LEA:
+				uint16_t r0 = (instruction >> 9) & 0x7;
+				uint16_t pc_offset = sign_extend(instruction & 0x1FF, 9);
+				reg[r0] = reg[R_PC] + pc_offset;
+				update_flags(r0);
 				break;
+
 			case OP_ST:
+				uint16_t r0 = (instruction >> 0) & 0x7;
+				uint16_t pc_offset = sign_extend(instruction & 0x1FF, 9);
+				mem_write(reg[R_PC] + pc_offset, reg[r0]);
 				break;
+
 			case OP_STI:
+				uint16_t r0 = (instruction >> 0) & 0x7;
+				uint16_t pc_offset = sign_extend(instruction & 0x1FF, 9);
+				mem_write(mem_write(reg[R_PC] + pc_offset, reg[r0]));
 				break;
+				
 			case OP_TRAP:
 				break;
 			case OP_RES:
