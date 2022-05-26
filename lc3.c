@@ -143,17 +143,32 @@ int main(int argc, const char* argv[])
 				reg[r0] = ~reg[r1];
 				update_flags(r0);
 				break;
-				
+
 			case OP_BR:
+				uint16_t pc_offset = sign_extend(instruction & 0x1FF, 9);
+				uint16_t cond_flag = (instruction >> 9) & 0x7;
+
+				if (cond_flag & reg[R_COND])
+				{
+					reg[R_PC] += pc_offset;
+				}
 				break;
+
 			case OP_JMP:
+				uint16_t r1 = (instruction >> 6) & 0x7
+				reg[R_PC] = reg[r1];
 				break;
+
 			case OP_JSR:
 				break;
 			case OP_LD:
+				uint16_t r0 = (instruction >> 9) & 0x7;
+				uint16_t pc_offset = sign_extend(instruction & 0x1FF, 9);
+				reg[r0] = mem_read(reg[R_PC] + pc_offset);
+				update_flags(r0);
 				break;
-			case OP_LDI:
 
+			case OP_LDI:
 				uint16_t r0 = (instruction >> 9) & 0x7;
 				uint16_t pc_offset = sign_extend(instruction & 0x1FF, 9);
 				reg[r0] = mem_read(mem_read(reg[R_PC] + pc_offset));
@@ -161,6 +176,19 @@ int main(int argc, const char* argv[])
 				break;
 
 			case OP_LDR:
+				reg[R_R7] = reg[R_PC];
+				uint16_t cond_flag = (instruction >> 11) & 0x1;
+
+				if (cond_flag)
+				{
+					uint16_t pc_offset = sign_extend(instruction & 0x7FF, 11);
+					reg[R_PC] += pc_offset;
+				}
+				else
+				{
+					uint16_t r1 = (instruction >> 6) & 0x7;
+					reg[R_PC] = reg[r1];					
+				}
 				break;
 			case OP_LEA:
 				break;
