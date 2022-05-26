@@ -114,9 +114,10 @@ int main(int argc, const char* argv[])
 					uint16_t r2 = instruction & 0x7;
 					reg[r0] = reg[r1] + reg[r2];
 				}
-				
+
 				update_flags(r0);
 				break;
+
 			case OP_AND:
 				break;
 			case OP_NOT:
@@ -130,7 +131,13 @@ int main(int argc, const char* argv[])
 			case OP_LD:
 				break;
 			case OP_LDI:
+
+				uint16_t r0 = (instruction >> 9) & 0x7;
+				uint16_t pc_offset = sign_extend(instruction & 0x1FF, 9);
+				reg[r0] = mem_read(mem_read(reg[R_PC] + pc_offset));
+				update_flags(r0);				
 				break;
+
 			case OP_LDR:
 				break;
 			case OP_LEA:
@@ -144,7 +151,7 @@ int main(int argc, const char* argv[])
 			case OP_RES:
 			case OP_RTI:
 			default:
-				/*BAD CODE*/
+				abort();
 				break;
 		}
 	}
