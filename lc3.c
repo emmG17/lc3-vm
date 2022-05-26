@@ -160,6 +160,19 @@ int main(int argc, const char* argv[])
 				break;
 
 			case OP_JSR:
+				reg[R_R7] = reg[R_PC];
+				uint16_t cond_flag = (instruction >> 11) & 0x1;
+
+				if (cond_flag)
+				{
+					uint16_t pc_offset = sign_extend(instruction & 0x7FF, 11);
+					reg[R_PC] += pc_offset;
+				}
+				else
+				{
+					uint16_t r1 = (instruction >> 6) & 0x7;
+					reg[R_PC] = reg[r1];					
+				}
 				break;
 			case OP_LD:
 				uint16_t r0 = (instruction >> 9) & 0x7;
@@ -176,19 +189,11 @@ int main(int argc, const char* argv[])
 				break;
 
 			case OP_LDR:
-				reg[R_R7] = reg[R_PC];
-				uint16_t cond_flag = (instruction >> 11) & 0x1;
-
-				if (cond_flag)
-				{
-					uint16_t pc_offset = sign_extend(instruction & 0x7FF, 11);
-					reg[R_PC] += pc_offset;
-				}
-				else
-				{
-					uint16_t r1 = (instruction >> 6) & 0x7;
-					reg[R_PC] = reg[r1];					
-				}
+				uint16_t r0 = (instruction >> 9) & 0x7;
+				uint16_t r1 = (instruction >> 6) & 0x7;
+				uint16_t offset = sign_extend(instr & 0x3F, 6);
+				reg[r0] = mem_read(reg[r1] + offset);
+				update_flags(r0);
 				break;
 
 			case OP_LEA:
@@ -207,9 +212,9 @@ int main(int argc, const char* argv[])
 			case OP_STI:
 				uint16_t r0 = (instruction >> 0) & 0x7;
 				uint16_t pc_offset = sign_extend(instruction & 0x1FF, 9);
-				mem_write(mem_write(reg[R_PC] + pc_offset, reg[r0]));
+				mem_write(mem_read(reg[R_PC] + pc_offset), reg[r0]);
 				break;
-				
+			
 			case OP_TRAP:
 				break;
 			case OP_RES:
