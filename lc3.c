@@ -44,6 +44,14 @@ uint16_t memory[MEMORY_MAX];
 
 uint16_t reg[R_COUNT];
 
+uint16_t sign_extend(uint16_t x, int bit_count)
+{
+	if ((x >> (bit_count - 1)) & 1) {
+		x |= (0xFFFF << bit_count)
+	}
+	return x;
+}
+
 int main(int argc, const char* argv[])
 {
 	if (argc < 2)
