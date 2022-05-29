@@ -190,7 +190,9 @@ int main(int argc, const char* argv[])
 			exit(1);
 		}
 	}
-	/* TODO initial setup */
+	
+	signal(SIGINT, handle_interrupt);
+	disable_input_buffering();
 
 	reg[R_COND] = FL_ZRO;
 
@@ -388,5 +390,6 @@ int main(int argc, const char* argv[])
 				break;
 		}
 	}
-	/*shutdown*/
+	
+	restore_input_buffering();
 }
